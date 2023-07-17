@@ -8,7 +8,7 @@ class ChatOpenAi(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="gpt",  help="!gpt <texto> - Faça uma pergunta ao chata OpenAI")
+    @commands.command(name="gpt", help="!gpt <texto> - Faça uma pergunta ao chata OpenAI")
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def chatopenai(self, ctx, *, text):
         openai.api_key = config('APIKEY')

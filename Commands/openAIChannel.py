@@ -1,8 +1,10 @@
+import discord
 import openai
 from decouple import config
 from discord.ext import commands
 
 from Services.operationChannel import OperationChannel
+from Views.deleteButton import DeleteButton
 
 
 class ChatOpenAiChannel(commands.Cog):
@@ -11,9 +13,18 @@ class ChatOpenAiChannel(commands.Cog):
         self.operationChannel = OperationChannel(bot)
         self.user_contexts = {}  # Dicionário para armazenar os contextos dos usuários
 
-    @commands.command(name="gptteste", help="!gptteste - Cria um canal para interagir com o bot")
+    @commands.command(name="canalgpt", help="!canalgpt - Cria um canal para interagir com o ChatOpenAi")
     async def chatopenaichannel(self, ctx):
-        await self.operationChannel.create_channel(ctx)
+        channeldetail = await self.operationChannel.create_channel(ctx)
+        embed = discord.Embed(title="ChatOpenAi",
+                              description="Esse canal está disponível apenas para você, então fique tranquilo.",
+                              color=0xdddddd)
+        embed.add_field(name="Resposta do chat OpenAi",
+                        value="Algumas respostas podem demorar por conta do tempo de resposta do OpenAi.", inline=False)
+        embed.add_field(name="Resposta do chat OpenAi",
+                        value="Para encerrar o canal basta clicar no botão de excluir canal.", inline=False)
+        delete_button = DeleteButton(self.operationChannel, channeldetail)
+        await channeldetail.send(embed=embed, view=delete_button)
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -49,6 +60,10 @@ class ChatOpenAiChannel(commands.Cog):
             max_tokens=150
         )
         return response
+
+    async def delete_user_context(self, channel_id):
+        if channel_id in self.user_contexts:
+            del self.user_contexts[channel_id]
 
 
 async def setup(bot):

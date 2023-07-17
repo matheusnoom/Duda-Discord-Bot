@@ -28,25 +28,16 @@ class OperationChannel(commands.Cog):
         # Armazena o ID do canal para uso posterior
         if author.id not in self.messageMap:
             self.messageMap[author.id] = []
-
         self.messageMap[author.id].append(channel.id)
-
         await ctx.send(f"Canal de texto criado: {channel.mention}")
-        return self.messageMap
+        return channel
 
-    async def delete_channel(self, ctx):
-        author = ctx.author
-        actualChannel = ctx.channel
-
-        if author.id not in self.messageMap or actualChannel.id not in self.messageMap[author.id]:
-            return await ctx.send("Você não tem permissão para deletar este canal!")
-
-        # Remove o ID do canal do dicionário
-        self.messageMap[author.id].remove(actualChannel.id)
-        if not self.messageMap[author.id]:
-            del self.messageMap[author.id]
-
-        # Remove o canal de texto atual
-        await actualChannel.delete()
-
-        await ctx.send(f"Canal de texto removido: {actualChannel.mention}")
+    async def delete_channel(self, channel):
+        channel_id = channel.id
+        for author in self.messageMap:
+            for id in self.messageMap[author]:
+                if id == channel_id:
+                    self.messageMap[author].remove(id)
+                    break
+        await self.bot.get_cog("ChatOpenAiChannel").delete_user_context(channel_id)
+        await channel.delete()
