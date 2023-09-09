@@ -3,8 +3,8 @@ import openai
 from decouple import config
 from discord.ext import commands
 
-from Services.operationChannel import OperationChannel
-from Views.deleteButton import DeleteButton
+from src.Service.operationChannel import OperationChannel
+from src.Views.deleteButton import DeleteButton
 
 
 class ChatOpenAiChannel(commands.Cog):
@@ -51,15 +51,18 @@ class ChatOpenAiChannel(commands.Cog):
         await message.channel.send(reply)
 
     async def send_to_openai(self, context):
-        openai.api_key = config('APIKEY')
+        try:
+            openai.api_key = config('OPENAI_API_KEY')
 
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0301",
-            messages=context,
-            temperature=0.7,
-            max_tokens=150
-        )
-        return response
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo-0301",
+                messages=context,
+                temperature=0.7,
+                max_tokens=150
+            )
+            return response
+        except Exception as e:
+            return f"Não foi possível se conectar ao OpenAi: {e}"
 
     async def delete_user_context(self, channel_id):
         if channel_id in self.user_contexts:
