@@ -7,15 +7,15 @@ class OperationChannel(commands.Cog):
         self.bot = bot
         self.messageMap = {}
 
-    async def create_channel(self, ctx):
+    async def create_channel(self, ctx, channelName):
         guild = ctx.guild
         author = ctx.author
 
         # Cria o canal de texto
-        category = discord.utils.get(guild.categories, name='Chat DudaGPT')
+        category = discord.utils.get(guild.categories, name=channelName)
 
         if category is None:
-            category = await guild.create_category_channel("Chat DudaGPT")
+            category = await guild.create_category_channel(channelName)
 
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(read_messages=False, send_messages=False),

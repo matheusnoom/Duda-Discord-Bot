@@ -15,7 +15,7 @@ class ChatOpenAiChannel(commands.Cog):
 
     @commands.command(name="canalgpt", help="!canalgpt - Cria um canal para interagir com o ChatOpenAi")
     async def chatopenaichannel(self, ctx):
-        channeldetail = await self.operationChannel.create_channel(ctx)
+        channeldetail = await self.operationChannel.create_channel(ctx, "Chat DudaGPT")
         embed = discord.Embed(title="ChatOpenAi",
                               description="Esse canal está disponível apenas para você, então fique tranquilo.",
                               color=0xdddddd)
