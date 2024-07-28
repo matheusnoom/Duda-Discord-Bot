@@ -1,5 +1,6 @@
 import discord
-import openai
+import os
+from openai import AsyncOpenAI
 from decouple import config
 from discord.ext import commands
 
@@ -12,21 +13,25 @@ class ChatOpenAi(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def chatopenai(self, ctx, *, text):
         try:
-            openai.api_key = config('OPENAI_API_KEY')
+            client = AsyncOpenAI(
+                api_key=os.environ['OPENAI_API_KEY']
+            )
 
-            completion = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo-0301",
+            response = await client.chat.completions.create(
+                model="gpt-3.5-turbo",
                 messages=[
                     {"role": "user", "content": f"{text}"}
                 ],
                 temperature=0.5,
                 max_tokens=150
             )
+
             embed = discord.Embed(
                 title=f"DudaGPT",
                 description=f"{text}",
                 color=0xdddddd)
-            embed.add_field(name="Resposta:", value=f"{completion.choices[0].message.content}", inline=False)
+            
+            embed.add_field(name="Resposta:", value=f"{response.choices[0].message.content}", inline=False)
             embed.set_thumbnail(url="https://i.imgur.com/RGSi4uC.jpg")
             await ctx.send(embed=embed)
         except Exception as e:

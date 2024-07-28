@@ -1,5 +1,6 @@
 import discord
-import openai
+import os
+from openai import AsyncOpenAI
 from decouple import config
 from discord.ext import commands
 
@@ -52,10 +53,12 @@ class ChatOpenAiChannel(commands.Cog):
 
     async def send_to_openai(self, context):
         try:
-            openai.api_key = config('OPENAI_API_KEY')
+            client = AsyncOpenAI(
+                api_key=os.environ['OPENAI_API_KEY']
+            )
 
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo-0301",
+            response = await client.chat.completions.create(
+                model="gpt-3.5-turbo",
                 messages=context,
                 temperature=0.7,
                 max_tokens=150
